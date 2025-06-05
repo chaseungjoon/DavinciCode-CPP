@@ -1,4 +1,4 @@
-❗Player.cpp is currently work in progress
+❗Currently work in progress -> FIX.md
 
 # Program Layout
 
