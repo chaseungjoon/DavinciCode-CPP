@@ -1,4 +1,4 @@
-❗Currently work in progress -> FIX.md
+❗This program is work in progress -> check FIX.md for current problems
 
 # Program Layout
 
