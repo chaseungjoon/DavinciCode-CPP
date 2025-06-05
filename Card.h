@@ -9,7 +9,7 @@ class Card {
 public:
     std::string color;
     int number;
-    bool shown;
+    bool shown = false;
     int seq;  // seq -> sequence of card in deck
 
     explicit Card(int seq);

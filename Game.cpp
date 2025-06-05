@@ -15,8 +15,6 @@ void Game::runGameLoop() {
         playerTurn();
         if (gameOverCheck()) break;
 
-        computer.updateProb(human.getHand());
-
         computerTurn();
         if (gameOverCheck()) break;
 
@@ -38,8 +36,14 @@ void Game::playerTurn() {
     // Guess
     int guessPos;
     int guessNum;
-    std::cout << "Guess (position, number) >> ";
-    std::cin >> guessPos >> guessNum;
+
+    while (true){
+        std::cout << "Guess (position, number) >> ";
+        std::cin >> guessPos >> guessNum;
+
+        if (computer.getHand()[guessPos].shown) std::cout << "\nYou can't guess revealed cards!\n\n";
+        else break;
+    }
 
     // Correct
     if (computer.getHand()[guessPos].number == guessNum) {
@@ -95,9 +99,10 @@ void Game::computerTurn() {
     Card selected = deck[index];
     computer.drawCard(selected);
     deck.erase(deck.begin() + index);
+    computer.updateProb(human.getHand());
 
     // Guess
-    auto [guessPos, guessNum] = computer.guessingAlgorithm(false);
+    auto [guessPos, guessNum] = computer.guessingAlgorithm(human.getHand(), false);
     std::cout << "Computer Guess : " << guessPos << "th is " << guessNum << "\n";
 
     // Correct
@@ -111,14 +116,15 @@ void Game::computerTurn() {
 
         // Computer Additional Guess
         while (!gameOverCheck()){
-            auto [guessPos, guessNum] = computer.guessingAlgorithm(true);
-            if (guessPos == -1) return;
-            std::cout << "Computer Guess : " << guessPos << "th is " << guessNum << "\n";
+            auto [guessPosAdditional, guessNumAdditional] = computer.guessingAlgorithm(human.getHand(), true);
+            if (guessPosAdditional == -1) return;
+            std::cout << "Computer "
+                         " : " << guessPosAdditional << "th is " << guessNumAdditional << "\n";
 
             // Correct
-            if (human.getHand()[guessPos].number == guessNum) {
+            if (human.getHand()[guessPosAdditional].number == guessNumAdditional) {
                 std::cout << "\nComputer Correct!\n";
-                human.getHand()[guessPos].reveal();
+                human.getHand()[guessPosAdditional].reveal();
 
                 // Update prob
                 computer.updateProb(human.getHand());
@@ -126,6 +132,10 @@ void Game::computerTurn() {
             // Not correct
             else {
                 std::cout << "\nComputer Wrong!\n";
+                // get rid of incorrect guess from prob vector
+                computer.deleteFromProb(guessPosAdditional, guessNumAdditional);
+
+                // reveal most recently drawn card
                 for (Card& card : computer.getHand()) {
                     if (card.seq == selected.seq) {
                         card.reveal();
@@ -139,6 +149,11 @@ void Game::computerTurn() {
     // Not correct
     else {
         std::cout << "\nComputer Wrong!\n";
+
+        // get rid of incorrect guess from prob vector
+        computer.deleteFromProb(guessPos, guessNum);
+
+        // reveal most recently drawn card
         for (Card& card : computer.getHand()) {
             if (card.seq == selected.seq) {
                 card.reveal();

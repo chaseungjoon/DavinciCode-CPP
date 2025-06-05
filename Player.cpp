@@ -9,6 +9,10 @@ Player::Player() {
     this->prob.clear();
 }
 
+bool Player::contains(const std::vector<int>& vec, int target){
+    return std::find(vec.begin(), vec.end(), target) != vec.end();
+}
+
 std::vector<Card>& Player::getHand() {
     return hand;
 }
@@ -34,47 +38,279 @@ int Player::shownCards() {
 
 void Player::initializeProb(const std::vector<Card>& humanHand){
 
-    // seqVec -> Vector of cards(seq) that the computer does not know about
+    // seqVec -> Vector of cards(seq) that the computer know about
     seqVec.clear();
-    seqVec.resize(24);
-    std::iota(seqVec.begin(), seqVec.end(), 0);
-
-    // Exclude cards that the computer holds from seqVec
-    for (const auto& card : hand) {
-        seqVec.erase(std::remove(seqVec.begin(), seqVec.end(), card.seq), seqVec.end());
+    for (const auto& card: hand){
+        seqVec.push_back(card.seq);
     }
 
-    // initialize prob vector
+    std::sort(seqVec.begin(), seqVec.end());
 
+    blackValVec.clear();
+    whiteValVec.clear();
+
+    for (int seq : seqVec){
+        if (seq%2==0) blackValVec.push_back(seq/2);
+        else whiteValVec.push_back(seq/2);
+    }
+
+    // count and index black/white cards in humanHand
+    int blackCount = 0;
+    int blackIdx = 0;
+    int whiteCount = 0;
+    int whiteIdx = 0;
+    for (const auto& card : humanHand) {
+        if (card.color == "black") blackCount++;
+        else whiteCount++;
+    }
+
+    // initialize prob vector - color, values (black, white)
+    prob.clear();
+    for (const auto & i : humanHand) {
+        probData newProb;
+        newProb.color = i.color;
+
+        if (newProb.color == "black") {
+            for (int j = blackIdx; j < 13 - (blackCount-blackIdx); ++j) {
+                if (!contains(blackValVec,j)) newProb.values.push_back(j);
+            }
+            blackIdx++;
+        } else {
+            for (int j = whiteIdx; j < 13 - (whiteCount-whiteIdx); ++j) {
+                if (!contains(whiteValVec,j)) newProb.values.push_back(j);
+            }
+            whiteIdx++;
+        }
+        prob.push_back(newProb);
+    }
+    adjustProb(humanHand);
+}
+
+void Player::adjustProb(const std::vector<Card> &humanHand) {
+
+    // count and index black/white cards in humanHand
+    std::vector<int> whiteIdxes;
+    std::vector<int> blackIdxes;
+    for (int i = 0; i < humanHand.size(); i++) {
+        if (humanHand[i].color == "black") blackIdxes.push_back(i);
+        else whiteIdxes.push_back(i);
+    }
+
+    /// BLACK + BLACK / WHITE + WHITE CARD RELATIONSHIPS
+    int lowerBound;
+    int upperBound;
+
+    // Black card relationship
+    for (int i = 0; i < blackIdxes.size(); i++){
+
+        if (i==0) lowerBound = -1;
+        else lowerBound = prob[blackIdxes[i - 1]].values[0];
+
+        if (i==blackIdxes.size()-1) upperBound = 12;
+        else upperBound = prob[blackIdxes[i + 1]].values.back();
+
+        // remove values leq/geq than lowerBound/upperBound
+        auto& vals = prob[blackIdxes[i]].values;
+
+        vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
+            return val <= lowerBound;
+        }), vals.end());
+
+        vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
+            return val >= upperBound;
+        }), vals.end());
+    }
+
+    // White card relationship
+    for (int i = 0; i < whiteIdxes.size(); i++){
+
+        if (i==0) lowerBound = -1;
+        else lowerBound = prob[whiteIdxes[i - 1]].values[0];
+
+        if (i==whiteIdxes.size()-1) upperBound = 12;
+        else upperBound = prob[whiteIdxes[i + 1]].values.back();
+
+        // remove values leq/geq than lowerBound/upperBound
+        auto& vals = prob[whiteIdxes[i]].values;
+
+        vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
+            return val <= lowerBound;
+        }), vals.end());
+
+        vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
+            return val >= upperBound;
+        }), vals.end());
+    }
+
+
+    /// BLACK + WHITE CARD RELATIONSHIPS
+
+    // when there are at least one white card
+    if (!whiteIdxes.empty()){
+        int left_closest_black_idx = -1;
+        int right_closest_black_idx = -1;
+
+        // get the right/left closest black card and fix the value vector
+        for (int whiteIdx : whiteIdxes){
+            left_closest_black_idx = -1;
+            right_closest_black_idx = -1;
+
+            for (int j = 0; j < whiteIdx; j++){
+                if (humanHand[j].color == "black") left_closest_black_idx = j;
+            }
+            for (int j = humanHand.size()-1; j > whiteIdx; j--){
+                if (humanHand[j].color == "black") right_closest_black_idx = j;
+            }
+
+            // Delete values that are smaller(larger) than min(max) lcb(rcb)
+            if (left_closest_black_idx != -1) {
+                int lowerBound = prob[left_closest_black_idx].values[0];
+                auto& vals = prob[whiteIdx].values;
+
+                vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
+                    return val < lowerBound;
+                }), vals.end());
+            }
+
+            if (right_closest_black_idx != -1) {
+                int upperBound = prob[right_closest_black_idx].values.back();  // max 값
+                auto& vals = prob[whiteIdx].values;
+
+                vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
+                    return val >= upperBound;
+                }), vals.end());
+            }
+        }
+    }
+
+    // when there are at least one black card
+    if (!blackIdxes.empty()){
+        int left_closest_white_idx = -1;
+        int right_closest_white_idx = -1;
+
+        // get the right/left closest white card and fix the value vector
+        for (int blackIdx : blackIdxes){
+            left_closest_white_idx = -1;
+            right_closest_white_idx = -1;
+
+            for (int j = 0; j < blackIdx; j++){
+                if (humanHand[j].color == "white") left_closest_white_idx = j;
+            }
+            for (int j = humanHand.size()-1; j > blackIdx; j--){
+                if (humanHand[j].color == "white") right_closest_white_idx = j;
+            }
+
+            // Delete values that are smaller(larger) than min(max) lcw(rcw)
+            if (left_closest_white_idx != -1) {
+                int lowerBound = prob[left_closest_white_idx].values[0];  // 최소값
+                auto& vals = prob[blackIdx].values;
+
+                vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
+                    return val <= lowerBound;
+                }), vals.end());
+            }
+
+            if (right_closest_white_idx != -1) {
+                int upperBound = prob[right_closest_white_idx].values.back();  // 최대값
+                auto& vals = prob[blackIdx].values;
+
+                vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
+                    return val > upperBound;
+                }), vals.end());
+            }
+        }
+    }
+
+    // FOR DEBUGGING (print prob vector)
+    if (debugMode){
+        debugScreen(humanHand);
+    }
 }
 
 void Player::updateProb(const std::vector<Card>& humanHand){
 
-    // Update seqVec - exclude human's shown cards from seqVec
-    for (const auto& card : humanHand) {
-        if (card.shown) seqVec.erase(std::remove(seqVec.begin(), seqVec.end(), card.seq), seqVec.end());
+    // Update seqVec - include human's shown cards from seqVec
+    for (const auto& card : humanHand){
+        if (card.shown && !contains(seqVec, card.seq)) seqVec.push_back(card.seq);
     }
 
-    // Update seqVec - exclude new cards that the computer owns
-    for (const auto& card : hand) {
-        seqVec.erase(std::remove(seqVec.begin(), seqVec.end(), card.seq), seqVec.end());
+    // Update seqVec - include new cards that the computer owns
+    for (const auto& card : hand){
+        if (!contains(seqVec, card.seq)) seqVec.push_back(card.seq);
     }
 
-    // update prob vector
+    std::sort(seqVec.begin(), seqVec.end());
 
+    blackValVec.clear();
+    whiteValVec.clear();
 
+    for (int seq : seqVec){
+        if (seq%2==0) blackValVec.push_back(seq/2);
+        else whiteValVec.push_back(seq/2);
+    }
+
+    // Add newly added card to prob
+    while (prob.size() < humanHand.size()) {
+        probData newData;
+        newData.color = humanHand[prob.size()].color;
+
+        // add values that are not in ValVec
+        if (newData.color=="black"){
+            for (int i = 0; i < 12; i++){
+                if (!contains(blackValVec,i)) newData.values.push_back(i);
+            }
+        }
+        else {
+            for (int i = 0; i < 12; i++){
+                if (!contains(whiteValVec,i)) newData.values.push_back(i);
+            }
+        }
+        prob.push_back(newData);
+    }
+
+    // If shown, collapse into known value
+    for (int i = 0; i < humanHand.size(); i++) {
+        if (humanHand[i].shown) {
+            prob[i].values = {humanHand[i].number};
+        }
+    }
+
+    // Get rid of numbers within probs that is in ValVec
+    for (auto& data : prob){
+        if (data.color=="black"){
+            data.values.erase(
+                    std::remove_if(data.values.begin(), data.values.end(),
+                                   [&](int x) {
+                        return std::find(blackValVec.begin(), blackValVec.end(), x) != blackValVec.end();
+                    }),
+                    data.values.end());
+        }
+        else{
+            data.values.erase(
+                    std::remove_if(data.values.begin(), data.values.end(),
+                                   [&](int x) {
+                                       return std::find(whiteValVec.begin(), whiteValVec.end(), x) != whiteValVec.end();
+                                   }),
+                    data.values.end());
+        }
+    }
+    // adjust neighboring cards values
+    adjustProb(humanHand);
 }
 
-void Player::propagation(){
-    // add propagation
+void Player::deleteFromProb(int probIdx, int target) {
+    auto& vec = prob[probIdx].values;
+    vec.erase(std::remove(vec.begin(), vec.end(), target), vec.end());
 }
 
-std::tuple<int, int> Player::guessingAlgorithm(bool additional) {
-    int minSize = prob[0].values.size();
-    int targetIdx = 0;
 
+std::tuple<int, int> Player::guessingAlgorithm(const std::vector<Card>& humanHand, bool additional) {
+    int minSize = 12;
+    int targetIdx = -1;
+
+    // find the card that has the smallest value vector
     for (int i = 1; i < prob.size(); ++i) {
-        if (!hand[i].shown && prob[i].values.size() < minSize) {
+        if (!humanHand[i].shown && prob[i].values.size() < minSize) {
             minSize = prob[i].values.size();
             targetIdx = i;
         }
@@ -91,4 +327,42 @@ std::tuple<int, int> Player::guessingAlgorithm(bool additional) {
     int guessNum = prob[targetIdx].values[dist(gen)];
 
     return {targetIdx, guessNum};
+}
+
+void Player::debugScreen(const std::vector<Card>& humanHand) {
+    std::cout << "\n **COMPUTER CARDS** \n";
+    for (auto & i : hand){
+        std::cout << i.color << i.number << "  ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "\n **seqVec** \n";
+    for (int i : seqVec){
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "\n **blackValVec** \n";
+    for (int i : blackValVec){
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "\n **whiteValVec** \n";
+    for (int i : whiteValVec){
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "\n **PROB VECTOR VALUES** \n";
+    for (int i = 0; i<prob.size(); i++){
+        auto& vec = prob[i].values;
+        if (humanHand[i].shown) std::cout << prob[i].color << "(SHOWN) -> ";
+        else std::cout << prob[i].color << ": ";
+
+        for (int j : vec){
+            std::cout << j << ' ';
+        }
+        std::cout << std::endl;
+    }
 }

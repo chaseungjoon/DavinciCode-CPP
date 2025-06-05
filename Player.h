@@ -14,16 +14,22 @@ private:
     };
     std::vector<probData> prob;
     std::vector<int> seqVec;
+    std::vector<int> blackValVec;
+    std::vector<int> whiteValVec;
+    bool debugMode = true;
 public:
     explicit Player();
     std::vector<Card>& getHand();
     void drawCard(const Card& card);
+    static bool contains(const std::vector<int>& vec, int target);
     int cardAmount();
     int shownCards();
     void initializeProb(const std::vector<Card>& hand);
     void updateProb(const std::vector<Card>& hand);
-    void propagation();
-    std::tuple<int, int> guessingAlgorithm(bool additional);
+    void adjustProb(const std::vector<Card>& hand);
+    void deleteFromProb(int probIdx, int target);
+    std::tuple<int, int> guessingAlgorithm(const std::vector<Card>& hand, bool additional);
+    void debugScreen(const std::vector<Card>& hand);
 };
 
 #endif

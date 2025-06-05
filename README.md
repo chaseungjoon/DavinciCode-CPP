@@ -78,8 +78,8 @@ Takes care of initialization, printing card layouts and checking winning situati
 ---
 ### Sequence Vector
 
-Create a sequence vector that contains the sequence of cards that is ***not shown*** at the moment
--> **candidate cards**
+Create a sequence vector that contains the sequence of cards that is ***shown*** at the moment
+-> **non-candidate cards**
 
 
 ### Probability Vector
@@ -95,7 +95,7 @@ struct probData{
 
 ***color*** is the color of the card, values are ***what the card's numbers can be***. 
 
-***values*** can only be picked from the ***sequence vector***
+***values*** can only be picked if not included in the ***sequence vector***
 
 For all the opponent's cards, Create a ***prob*** vector of these ***probData***.
 

@@ -8,7 +8,6 @@ Card::Card(int seq) {
     else this->color = "white";
 
     this->number = seq/2;
-    this->shown = false;
     this->seq = seq;
 }
 
