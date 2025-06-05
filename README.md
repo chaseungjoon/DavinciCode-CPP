@@ -63,7 +63,7 @@ Takes care of initialization, printing card layouts and checking winning situati
 
 ---
 
-# Opponent Algorithm
+# AI Algorithm
 
 
 ## Algorithm Overview
