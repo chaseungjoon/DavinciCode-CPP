@@ -102,6 +102,7 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
 
     // Black card relationship
     for (int i = 0; i < blackIdxes.size(); i++){
+        if (humanHand[blackIdxes[i]].shown) continue;
 
         if (i==0) lowerBound = -1;
         else lowerBound = prob[blackIdxes[i - 1]].values[0];
@@ -123,6 +124,7 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
 
     // White card relationship
     for (int i = 0; i < whiteIdxes.size(); i++){
+        if (humanHand[whiteIdxes[i]].shown) continue;
 
         if (i==0) lowerBound = -1;
         else lowerBound = prob[whiteIdxes[i - 1]].values[0];
@@ -152,6 +154,8 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
 
         // get the right/left closest black card and fix the value vector
         for (int whiteIdx : whiteIdxes){
+            if (humanHand[whiteIdx].shown) continue;
+
             left_closest_black_idx = -1;
             right_closest_black_idx = -1;
 
@@ -190,6 +194,8 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
 
         // get the right/left closest white card and fix the value vector
         for (int blackIdx : blackIdxes){
+            if (humanHand[blackIdx].shown) continue;
+
             left_closest_white_idx = -1;
             right_closest_white_idx = -1;
 
