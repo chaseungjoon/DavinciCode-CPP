@@ -222,9 +222,7 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
     }
 
     // FOR DEBUGGING (print prob vector)
-    if (debugMode){
-        debugScreen(humanHand);
-    }
+    if (debugMode) debugScreen(humanHand);
 }
 
 void Player::updateProb(const std::vector<Card>& humanHand){
@@ -270,28 +268,27 @@ void Player::updateProb(const std::vector<Card>& humanHand){
 
     // If shown, collapse into known value
     for (int i = 0; i < humanHand.size(); i++) {
-        if (humanHand[i].shown) {
-            prob[i].values = {humanHand[i].number};
-        }
+        if (humanHand[i].shown) prob[i].values = {humanHand[i].number};
     }
 
-    // Get rid of numbers within probs that is in ValVec
-    for (auto& data : prob){
-        if (data.color=="black"){
-            data.values.erase(
-                    std::remove_if(data.values.begin(), data.values.end(),
+    // For not revealed cards, get rid of numbers within probs that is in ValVec
+    for (int i = 0; i < prob.size(); i++) {
+        if (humanHand[i].shown) continue;
+        if (prob[i].color=="black"){
+            prob[i].values.erase(
+                    std::remove_if(prob[i].values.begin(), prob[i].values.end(),
                                    [&](int x) {
                         return std::find(blackValVec.begin(), blackValVec.end(), x) != blackValVec.end();
                     }),
-                    data.values.end());
+                    prob[i].values.end());
         }
         else{
-            data.values.erase(
-                    std::remove_if(data.values.begin(), data.values.end(),
+            prob[i].values.erase(
+                    std::remove_if(prob[i].values.begin(), prob[i].values.end(),
                                    [&](int x) {
                                        return std::find(whiteValVec.begin(), whiteValVec.end(), x) != whiteValVec.end();
                                    }),
-                    data.values.end());
+                    prob[i].values.end());
         }
     }
     // adjust neighboring cards values
@@ -309,7 +306,7 @@ std::tuple<int, int> Player::guessingAlgorithm(const std::vector<Card>& humanHan
     int targetIdx = -1;
 
     // find the card that has the smallest value vector
-    for (int i = 1; i < prob.size(); ++i) {
+    for (int i = 0; i < prob.size(); i++) {
         if (!humanHand[i].shown && prob[i].values.size() < minSize) {
             minSize = prob[i].values.size();
             targetIdx = i;

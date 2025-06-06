@@ -16,7 +16,9 @@ private:
     std::vector<int> seqVec;
     std::vector<int> blackValVec;
     std::vector<int> whiteValVec;
+
     bool debugMode = true;
+
 public:
     explicit Player();
     std::vector<Card>& getHand();
