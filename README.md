@@ -1,8 +1,32 @@
 ❗This program is work in progress -> check ***FIX.md*** for current problems
 
-# Program Layout
+
+# How to run
+
+1. clone
+```bash
+git clone https://github.com/chaseungjoon/DavincicodeCPP.git
+cd DavincicodeCPP
+```
+
+2. Build
+(❗Make sure you have CMake (>= 3.31) and a C++20-compatible compiler installed)
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
+
+3. Run
+```bash
+./DavincicodeCPP
+```
 
 ---
+
+# Program Layout
+
 
 ## Card.h
 
