@@ -1,4 +1,4 @@
-❗Player.cpp is currently work in progress
+❗This program is work in progress -> check ***FIX.md*** for current problems
 
 # Program Layout
 
@@ -63,7 +63,7 @@ Takes care of initialization, printing card layouts and checking winning situati
 
 ---
 
-# Opponent Algorithm
+# AI Algorithm
 
 
 ## Algorithm Overview
