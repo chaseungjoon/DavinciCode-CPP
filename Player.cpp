@@ -105,10 +105,16 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
         if (humanHand[blackIdxes[i]].shown) continue;
 
         if (i==0) lowerBound = -1;
-        else lowerBound = prob[blackIdxes[i - 1]].values[0];
+        else lowerBound = *std::min_element(
+                    prob[blackIdxes[i - 1]].values.begin(),
+                    prob[blackIdxes[i - 1]].values.end()
+            );
 
         if (i==blackIdxes.size()-1) upperBound = 12;
-        else upperBound = prob[blackIdxes[i + 1]].values.back();
+        else upperBound = *std::max_element(
+                    prob[blackIdxes[i + 1]].values.begin(),
+                    prob[blackIdxes[i + 1]].values.end()
+            );
 
         // remove values leq/geq than lowerBound/upperBound
         auto& vals = prob[blackIdxes[i]].values;
@@ -127,10 +133,16 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
         if (humanHand[whiteIdxes[i]].shown) continue;
 
         if (i==0) lowerBound = -1;
-        else lowerBound = prob[whiteIdxes[i - 1]].values[0];
+        else lowerBound = *std::min_element(
+                    prob[whiteIdxes[i - 1]].values.begin(),
+                    prob[whiteIdxes[i - 1]].values.end()
+            );
 
         if (i==whiteIdxes.size()-1) upperBound = 12;
-        else upperBound = prob[whiteIdxes[i + 1]].values.back();
+        else upperBound = *std::max_element(
+                    prob[whiteIdxes[i + 1]].values.begin(),
+                    prob[whiteIdxes[i + 1]].values.end()
+            );
 
         // remove values leq/geq than lowerBound/upperBound
         auto& vals = prob[whiteIdxes[i]].values;
@@ -168,7 +180,10 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
 
             // Delete values that are smaller(larger) than min(max) lcb(rcb)
             if (left_closest_black_idx != -1) {
-                int lowerBound = prob[left_closest_black_idx].values[0];
+                lowerBound = *std::min_element(
+                        prob[left_closest_black_idx].values.begin(),
+                        prob[left_closest_black_idx].values.end()
+                        );
                 auto& vals = prob[whiteIdx].values;
 
                 vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
@@ -177,7 +192,10 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
             }
 
             if (right_closest_black_idx != -1) {
-                int upperBound = prob[right_closest_black_idx].values.back();  // max 값
+                upperBound = *std::max_element(
+                        prob[right_closest_black_idx].values.begin(),
+                        prob[right_closest_black_idx].values.end()
+                        );
                 auto& vals = prob[whiteIdx].values;
 
                 vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
@@ -208,7 +226,10 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
 
             // Delete values that are smaller(larger) than min(max) lcw(rcw)
             if (left_closest_white_idx != -1) {
-                int lowerBound = prob[left_closest_white_idx].values[0];  // 최소값
+                lowerBound = *std::min_element(
+                        prob[left_closest_white_idx].values.begin(),
+                        prob[left_closest_white_idx].values.end()
+                        );
                 auto& vals = prob[blackIdx].values;
 
                 vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
@@ -217,7 +238,10 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
             }
 
             if (right_closest_white_idx != -1) {
-                int upperBound = prob[right_closest_white_idx].values.back();  // 최대값
+                upperBound = *std::max_element(
+                        prob[right_closest_white_idx].values.begin(),
+                        prob[right_closest_white_idx].values.end()
+                        );
                 auto& vals = prob[blackIdx].values;
 
                 vals.erase(std::remove_if(vals.begin(), vals.end(), [&](int val) {
