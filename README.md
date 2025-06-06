@@ -69,7 +69,7 @@ struct probData{
 };
 std::vector<probData> prob;
 ```
-Indicating cards that has not been shown/known yet, a sequence vector exists as an attribute.
+Indicating cards that has been shown/known, a sequence vector exists as an attribute.
 ```cpp
 std::vector<int> seqVec;
 ```
