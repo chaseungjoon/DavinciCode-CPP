@@ -63,7 +63,9 @@ void Game::playerTurn() {
         computer.getHand()[guessPos].reveal();
 
         //Additional Guess
-        while (!gameOverCheck()){
+        while (true){
+            if (computer.shownCards() == computer.cardAmount()) return;
+
             std::cout << "Additional Guess (position, number)(-1 if not guessing) >> ";
             std::cin >> guessPos;
             if (guessPos == -1) return;
@@ -134,6 +136,8 @@ void Game::computerTurn() {
 
         // Computer Additional Guess
         while (true){
+            if (human.shownCards() == human.cardAmount()) return;
+
             auto [guessPosAdditional, guessNumAdditional] = computer.guessingAlgorithm(human.getHand(), true);
             if (guessPosAdditional == -1) return;
             std::cout << "\nComputer "
