@@ -1,6 +1,4 @@
-# SEGFAULT
-
-## After some cards are revealed, the prob vector become empty
+## SEGFAULT : After some cards are revealed, the prob vector become empty
 
 * probs empty -> guessingAlgorithm cannot index into it -> segfault
 
@@ -9,3 +7,5 @@
 1. adjustProb : Observing surrounding cards, adjust the value vector of this card
 2. updateProb : After ValVec is updated, removes values that is included in ValVec
 3. deleteFromProb (called after wrong guess)
+
+## When human draw card, the prob vector update's color & position is not correct

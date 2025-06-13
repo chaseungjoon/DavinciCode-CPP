@@ -96,7 +96,7 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
         else whiteIdxes.push_back(i);
     }
 
-    /// BLACK + BLACK / WHITE + WHITE CARD RELATIONSHIPS
+    /// BLACK + BLACK / WHITE + WHITE CARD RELATIONSHIPS -> This is most likely the problem
     int lowerBound;
     int upperBound;
 
@@ -128,7 +128,7 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
         }), vals.end());
     }
 
-    // White card relationship
+    // White card relationship - same with black
     for (int i = 0; i < whiteIdxes.size(); i++){
         if (humanHand[whiteIdxes[i]].shown) continue;
 
@@ -255,7 +255,7 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
     if (debugMode) debugScreen(humanHand);
 }
 
-void Player::updateProb(const std::vector<Card>& humanHand){
+void Player::updateProb(std::vector<Card>& humanHand){
 
     // Update seqVec - include human's shown cards from seqVec
     for (const auto& card : humanHand){
@@ -280,7 +280,12 @@ void Player::updateProb(const std::vector<Card>& humanHand){
     // Add newly added card to prob
     while (prob.size() < humanHand.size()) {
         probData newData;
-        newData.color = humanHand[prob.size()].color;
+        for (auto& card : humanHand){
+            if (card.newlyDrawn) {
+                newData.color = card.color;
+                break;
+            }
+        }
 
         // add values that are not in ValVec
         if (newData.color=="black"){
@@ -301,7 +306,7 @@ void Player::updateProb(const std::vector<Card>& humanHand){
         if (humanHand[i].shown) prob[i].values = {humanHand[i].number};
     }
 
-    // For not revealed cards, get rid of numbers within probs that is in ValVec
+    // For hidden cards, get rid of numbers within probs that is in ValVec
     for (int i = 0; i < prob.size(); i++) {
         if (humanHand[i].shown) continue;
         if (prob[i].color=="black"){

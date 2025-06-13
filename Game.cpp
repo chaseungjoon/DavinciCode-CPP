@@ -22,6 +22,11 @@ void Game::runGameLoop() {
 }
 
 void Game::playerTurn() {
+    for (Card& card : human.getHand()) {
+        if (card.newlyDrawn) {
+            card.resetDrawn();
+        }
+    }
 
     // Draw card
     std::random_device rd;
@@ -30,6 +35,8 @@ void Game::playerTurn() {
 
     int index = dist(gen);
     Card selected = deck[index];
+    selected.newlyDrawn = true;
+
     human.drawCard(selected);
     deck.erase(deck.begin() + index);
 
@@ -89,6 +96,11 @@ void Game::playerTurn() {
 }
 
 void Game::computerTurn() {
+    for (Card& card : computer.getHand()) {
+        if (card.newlyDrawn) {
+            card.resetDrawn();
+        }
+    }
 
     // Draw card
     std::random_device rd;
@@ -97,6 +109,8 @@ void Game::computerTurn() {
 
     int index = dist(gen);
     Card selected = deck[index];
+    selected.newlyDrawn = true;
+
     computer.drawCard(selected);
     deck.erase(deck.begin() + index);
     computer.updateProb(human.getHand());
@@ -217,7 +231,8 @@ void Game::printVisual() {
         const Card& card = oppHand[i];
 
         Line_7 += "    " + std::to_string(i) + "     ";
-        Line_0 += "          ";
+        if (card.newlyDrawn) Line_0 = "  NEW";
+        else Line_0 += "          ";
 
         if (!card.shown) {
             Line_1 += line_white_1 + "  ";
@@ -251,7 +266,8 @@ void Game::printVisual() {
         const Card& card = myHand[i];
 
         Line_7 += "    " + std::to_string(i) + "     ";
-        Line_0 += "          ";
+        if (card.newlyDrawn) Line_0 = "  NEW";
+        else Line_0 += "          ";
 
         if (!card.shown) {
             Line_1 += line_white_1 + "  ";

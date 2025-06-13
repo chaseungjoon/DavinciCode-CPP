@@ -17,7 +17,7 @@ private:
     std::vector<int> blackValVec;
     std::vector<int> whiteValVec;
 
-    bool debugMode = false;
+    bool debugMode = true;
 
 public:
     explicit Player();
@@ -27,7 +27,7 @@ public:
     int cardAmount();
     int shownCards();
     void initializeProb(const std::vector<Card>& hand);
-    void updateProb(const std::vector<Card>& hand);
+    void updateProb(std::vector<Card>& hand);
     void adjustProb(const std::vector<Card>& hand);
     void deleteFromProb(int probIdx, int target);
     std::tuple<int, int> guessingAlgorithm(const std::vector<Card>& hand, bool additional);

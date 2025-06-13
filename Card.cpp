@@ -13,3 +13,6 @@ Card::Card(int seq) {
 
 void Card::reveal() {shown = true;}
 
+void Card::resetDrawn() {
+    newlyDrawn = false;
+}

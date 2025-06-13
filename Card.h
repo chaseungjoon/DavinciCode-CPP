@@ -11,9 +11,11 @@ public:
     int number;
     bool shown = false;
     int seq;  // seq -> sequence of card in deck
+    bool newlyDrawn = false;
 
     explicit Card(int seq);
     void reveal();
+    void resetDrawn();
 };
 
 #endif
