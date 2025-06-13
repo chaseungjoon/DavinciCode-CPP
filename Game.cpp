@@ -184,23 +184,23 @@ void Game::initialize() {
         deck.push_back(Card(i));
     }
 
-    // 8장 랜덤 뽑기
+    // Draw 8 random cards
     std::vector<int> nums(24);
     std::iota(nums.begin(), nums.end(), 0); // 0 ~ 23
     std::shuffle(nums.begin(), nums.end(), std::mt19937(std::random_device{}()));
     nums.resize(8);
 
-    // 앞 4장 플레이어에게 지급
+    // Give the first 4 cards to human
     for (int i = 0; i < 4; ++i) {
         human.drawCard(deck[nums[i]]);
     }
 
-    // 뒷 4장 컴퓨터에게 지급
+    // Give the next 4 cards to computer
     for (int i = 4; i < 8; ++i) {
         computer.drawCard(deck[nums[i]]);
     }
 
-    // 8장 덱에서 제거
+    // Remove drawn cards from deck
     std::sort(nums.begin(), nums.begin() + 8, std::greater<>());
     for (int i = 0; i < 8; ++i) {
         deck.erase(deck.begin() + nums[i]);
@@ -262,6 +262,7 @@ void Game::printVisual() {
     // RESET FOR PLAYER
     Line_0 = Line_1 = Line_2 = Line_3 = Line_4 = Line_5 = Line_7 = "";
 
+    // PLAYER CARDS
     for (int i = 0; i < myHand.size(); i++) {
         const Card& card = myHand[i];
 

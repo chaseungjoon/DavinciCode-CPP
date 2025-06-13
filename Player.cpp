@@ -96,7 +96,7 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
         else whiteIdxes.push_back(i);
     }
 
-    /// BLACK + BLACK / WHITE + WHITE CARD RELATIONSHIPS -> This is most likely the problem
+    /// BLACK + BLACK / WHITE + WHITE CARD RELATIONSHIPS
     int lowerBound;
     int upperBound;
 
@@ -251,7 +251,7 @@ void Player::adjustProb(const std::vector<Card> &humanHand) {
         }
     }
 
-    // FOR DEBUGGING (print prob vector)
+    // FOR DEBUGGING
     if (debugMode) debugScreen(humanHand);
 }
 

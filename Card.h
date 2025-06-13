@@ -10,7 +10,7 @@ public:
     std::string color;
     int number;
     bool shown = false;
-    int seq;  // seq -> sequence of card in deck
+    int seq;
     bool newlyDrawn = false;
 
     explicit Card(int seq);
