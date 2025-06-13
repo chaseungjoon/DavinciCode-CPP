@@ -54,8 +54,6 @@ boolean attribute "shown" indicates if card is shown
 
 boolean attribute "newlyDrawn" indicates if card is newly drawn (for printing purposes & sorting purposes)
 
-```cpp
-
 ## Player.h
 
 There are only two instances of Player class;
@@ -84,12 +82,12 @@ For the computer's guessing algorithm, the following functions are implemented
 ```cpp
 void initializeProb(const std::vector<Card>& hand);
 void updateProb(const std::vector<Card>& hand);
-void propagation();
+void adjustProb(const std::vector<Card>& hand);
 ```
 
 ## Game.h
 
-Takes care of initialization, printing card layouts and checking winning situations.
+Take care of initialization, printing card layouts and checking winning situations.
 
 ---
 
