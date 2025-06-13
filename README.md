@@ -230,3 +230,4 @@ For strategic reasons, additional guessing is only initiated when there is a ***
 The additional guessing is looped until;
 1. Incorrect guess
 2. No ***definite-sized vector*** available
+3. Game over
