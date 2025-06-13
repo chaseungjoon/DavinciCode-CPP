@@ -1,5 +1,7 @@
-❗This program is ***work in progress*** -> check ***FIX.md*** for current problems
+# DavinciCode Card Game in C++
+### Created by Cha Seungjoon
 
+---
 
 # How to run
 
