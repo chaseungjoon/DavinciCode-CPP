@@ -18,7 +18,11 @@ void Game::runGameLoop() {
         computerTurn();
         if (gameOverCheck()) break;
 
-        std::this_thread::sleep_for(std::chrono::seconds(2));}
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+    }
+    human.setAllShown();
+    computer.setAllShown();
+    printVisual();
 }
 
 void Game::playerTurn() {

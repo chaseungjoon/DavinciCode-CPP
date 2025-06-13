@@ -22,6 +22,7 @@ private:
 public:
     explicit Player();
     std::vector<Card>& getHand();
+    void setAllShown();
     void drawCard(const Card& card);
     static bool contains(const std::vector<int>& vec, int target);
     int cardAmount();

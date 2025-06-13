@@ -9,6 +9,12 @@ Player::Player() {
     this->prob.clear();
 }
 
+void Player::setAllShown() {
+    for (auto & i : hand) {
+        i.shown = true;
+    }
+}
+
 bool Player::contains(const std::vector<int>& vec, int target){
     return std::find(vec.begin(), vec.end(), target) != vec.end();
 }
