@@ -4,5 +4,7 @@ int main()
 {
     Game game;
     game.runGameLoop();
+
+    return 0;
 }
 

@@ -280,9 +280,11 @@ void Player::updateProb(std::vector<Card>& humanHand){
     // Add newly added card to prob
     while (prob.size() < humanHand.size()) {
         probData newData;
-        for (auto& card : humanHand){
-            if (card.newlyDrawn) {
-                newData.color = card.color;
+        int newlyDrawnIdx;
+        for (int i = 0; i < humanHand.size(); i++){
+            if (humanHand[i].newlyDrawn) {
+                newData.color = humanHand[i].color;
+                newlyDrawnIdx = i;
                 break;
             }
         }
@@ -298,7 +300,7 @@ void Player::updateProb(std::vector<Card>& humanHand){
                 if (!contains(whiteValVec,i)) newData.values.push_back(i);
             }
         }
-        prob.push_back(newData);
+        prob.insert(prob.begin() + newlyDrawnIdx, newData);
     }
 
     // If shown, collapse into known value

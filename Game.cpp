@@ -117,7 +117,7 @@ void Game::computerTurn() {
 
     // Guess
     auto [guessPos, guessNum] = computer.guessingAlgorithm(human.getHand(), false);
-    std::cout << "Computer Guess : " << guessPos << "th is " << guessNum << "\n";
+    std::cout << "\nComputer Guess : " << guessPos << "th is " << guessNum << "\n";
 
     // Correct
     if (human.getHand()[guessPos].number == guessNum) {
@@ -129,10 +129,10 @@ void Game::computerTurn() {
         computer.updateProb(human.getHand());
 
         // Computer Additional Guess
-        while (!gameOverCheck()){
+        while (true){
             auto [guessPosAdditional, guessNumAdditional] = computer.guessingAlgorithm(human.getHand(), true);
             if (guessPosAdditional == -1) return;
-            std::cout << "Computer "
+            std::cout << "\nComputer "
                          " : " << guessPosAdditional << "th is " << guessNumAdditional << "\n";
 
             // Correct
@@ -231,7 +231,7 @@ void Game::printVisual() {
         const Card& card = oppHand[i];
 
         Line_7 += "    " + std::to_string(i) + "     ";
-        if (card.newlyDrawn) Line_0 = "  NEW";
+        if (card.newlyDrawn) Line_0 += "  NEW";
         else Line_0 += "          ";
 
         if (!card.shown) {
@@ -266,7 +266,7 @@ void Game::printVisual() {
         const Card& card = myHand[i];
 
         Line_7 += "    " + std::to_string(i) + "     ";
-        if (card.newlyDrawn) Line_0 = "  NEW";
+        if (card.newlyDrawn) Line_0 += "  NEW";
         else Line_0 += "          ";
 
         if (!card.shown) {

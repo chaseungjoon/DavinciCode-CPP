@@ -17,7 +17,7 @@ private:
     std::vector<int> blackValVec;
     std::vector<int> whiteValVec;
 
-    bool debugMode = true;
+    bool debugMode = false;
 
 public:
     explicit Player();

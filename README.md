@@ -50,6 +50,10 @@ seq / 2
 
 boolean attribute "shown" indicates if card is shown
 
+boolean attribute "newlyDrawn" indicates if card is newly drawn (for printing purposes & sorting purposes)
+
+```cpp
+
 ## Player.h
 
 There are only two instances of Player class;
