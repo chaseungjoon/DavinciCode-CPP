@@ -10,7 +10,6 @@ void Game::runGameLoop() {
     initialize();
 
     while (true) {
-        printVisual();
 
         playerTurn();
         if (gameOverCheck()) break;
@@ -43,6 +42,8 @@ void Game::playerTurn() {
 
     human.drawCard(selected);
     deck.erase(deck.begin() + index);
+
+    printVisual();
 
     // Guess
     int guessPos;
@@ -120,6 +121,8 @@ void Game::computerTurn() {
     computer.drawCard(selected);
     deck.erase(deck.begin() + index);
     computer.updateProb(human.getHand());
+
+    printVisual();
 
     // Guess
     auto [guessPos, guessNum] = computer.guessingAlgorithm(human.getHand(), false);
